@@ -1,6 +1,6 @@
 gemfileparser==0.8.0
 toml==0.10.2
-lxml==4.6.2
+lxml==4.6.3
 memoization==0.3.2
 requests==2.24.0
 pypi_simple==0.8.0
