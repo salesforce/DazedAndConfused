@@ -80,9 +80,13 @@ def get_pip_dependencies(filename, req_file):
     return result
 
 #checks the pip public repo for a package
-def check_pip_public_repo(pkg):
+def check_pip_public_repo(pkg, registryurl=None):
     try:
-        with PyPISimple() as client:
+        base_url = 'https://pypi.org/simple/'
+        if registryurl:
+            base_url = registryurl
+
+        with PyPISimple(endpoint=registryurl) as client:
             version = 0
             requests_page = client.get_project_page(pkg['name'])
             if requests_page:

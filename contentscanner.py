@@ -41,7 +41,7 @@ class Scanner:
         return result
 
     #checks a data string for dependency confusion
-    def scan_contents(self, name, data):
+    def scan_contents(self, name, data, registryurl=None):
         errstr = ""
         try:
             singleresult = {}
@@ -50,7 +50,8 @@ class Scanner:
             for module in self.MODULES['modules']:
                 if name.lower() in module['manifest_file'] or name.lower() in module['lock_file']:
                     errstr = f"{module['parse_func'].__name__}({name}, data)"
-                    res = self.check_dependencies(module['parse_func'](name, data), module['repo_check_func'])
+                    res = self.check_dependencies(module['parse_func'](name, data), module['repo_check_func'],
+                                                  registryurl=registryurl)
                     break            
 
             #creates the output object for this result and append it to
@@ -66,7 +67,7 @@ class Scanner:
 
 
     #check each dependency (now with threads!)
-    def check_dependencies(self, deps, repo_check_method):
+    def check_dependencies(self, deps, repo_check_method, registryurl=None):
         try:
             vulnerable = []
             sus = []
@@ -82,7 +83,7 @@ class Scanner:
             
             #check each dependency with a new thread
             with concurrent.futures.ThreadPoolExecutor(max_workers=15) as executor:
-                fut = [executor.submit(repo_check_wrapper, repo_check_method, dep) for dep in deps]
+                fut = [executor.submit(repo_check_wrapper, repo_check_method, dep, registryurl=registryurl) for dep in deps]
                 for r in concurrent.futures.as_completed(fut):
                     res.append(r.result())
             res = sorted(res, key = lambda i: i['package']['name'])
@@ -117,6 +118,6 @@ class Scanner:
 
 # need this to cache results
 @cached
-def repo_check_wrapper(repo_check_method, pkg):
-    tmp = repo_check_method(pkg)
+def repo_check_wrapper(repo_check_method, pkg, registryurl=None):
+    tmp = repo_check_method(pkg, registryurl=registryurl)
     return {'package': pkg, 'version': tmp}

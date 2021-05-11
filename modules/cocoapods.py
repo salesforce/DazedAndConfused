@@ -69,7 +69,7 @@ def get_cocoapods_dependencies(filename, contents):
     return results
 
 #checks the cocoapods public repo for a package
-def check_cocoapods_public_repo(pkg):
+def check_cocoapods_public_repo(pkg, registryurl=None):
     try:
         data = '{"params":"query=' + pkg['name'] + '"}'
         ret = requests.post("https://wbhhamhynm-dsn.algolia.net/1/indexes/cocoapods/query?x-algolia-application-id=WBHHAMHYNM&x-algolia-api-key=4f7544ca8701f9bf2a4e55daff1b09e9", data, timeout=5)

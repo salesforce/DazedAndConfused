@@ -212,14 +212,18 @@ def get_gradle_dependencies(filename, contents):
 @sleep_and_retry
 @limits(calls=10, period=1)
 #checks the maven public repo for a package
-def check_gradle_public_repo(pkg):
+def check_gradle_public_repo(pkg, registryurl=None):
     try:
         if 'group' in pkg and pkg['group'] is not None:
             qs = f"a:%22{pkg['name']}%22%20AND%20g%3A%22{pkg['group']}%22"
         else:
             qs = f"a:%22{pkg['name']}%22"
+
+
         mavenurl = f"https://search.maven.org/solrsearch/select?q={qs}"
-        
+        if registryurl:
+            mavenurl = f"{registryurl}solrsearch/select?q={qs}"
+
         with urllib.request.urlopen(mavenurl, timeout=10) as url:
             data = json.loads(url.read().decode())     
             if data['response']['numFound'] == 0:
