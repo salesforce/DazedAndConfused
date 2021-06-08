@@ -11,7 +11,7 @@ memoization==0.3.2
 requests==2.24.0
 pypi_simple==0.8.0
 ratelimit==2.2.1
-urllib3==1.25.11
+urllib3==1.26.5
 click==7.1.2
 pyarn==0.1.0
 pyyaml==5.4.1
