@@ -39,11 +39,16 @@ def get_composer_dependencies(filename, contents):
     return results
 
 #checks the composer public repo for a package
-def check_composer_public_repo(pkg):
+def check_composer_public_repo(pkg, registryurl=None):
     try:
         if 'url' in pkg:
             return pkg['version']
-        with urllib.request.urlopen(f"https://repo.packagist.org/p2/{pkg['name']}.json", timeout=10) as url:
+
+        base_url = 'https://repo.packagist.org/p2/'
+        if registryurl:
+            base_url = registryurl
+
+        with urllib.request.urlopen(f"{base_url}{pkg['name']}.json", timeout=10) as url:
             data = json.loads(url.read().decode())
         if 'packages' in data:
             if pkg['name'] in data['packages']:

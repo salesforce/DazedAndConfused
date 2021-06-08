@@ -22,13 +22,14 @@ def dazed_and_confused():
 @dazed_and_confused.command('file', short_help='scans a single manifest file locally')
 @click.option("-filename", "-f", required=True, help="file name")
 @click.option("-resultsfile", "-rf", required=True, help="results file name")
-def check_file(filename, resultsfile):
+@click.option("-registryurl", "-ru", required=False, help="registry url")
+def check_file(filename, resultsfile, registryurl):
     """ The [file] command scans a single manifest file locally """
     try:
         with open(filename,"r") as f:
             data = f.read()
         FILESCANNER = Scanner("./modules", "modules.json")
-        singleresult = FILESCANNER.scan_contents(os.path.basename(filename), data)
+        singleresult = FILESCANNER.scan_contents(os.path.basename(filename), data, registryurl=registryurl)
         write_output_file(resultsfile, singleresult)
     except Exception as e:
         print(f"Error: {e} in check_file")
@@ -38,12 +39,13 @@ def check_file(filename, resultsfile):
 @click.option("-manifestname", "-mn", required=True, help="manifest file name (e.g. package.json)")
 @click.option("-url", "-u", required=True, help="file url")
 @click.option("-resultsfile", "-rf", required=True, help="results file name")
-def check_url(manifestname, url, resultsfile):
+@click.option("-registryurl", "-ru", required=False, help="registry url")
+def check_url(manifestname, url, resultsfile, registryurl):
     """ The [url] command scans a single manifest file via url """
     try:
         FILESCANNER = Scanner("./modules", "modules.json")
         data = urllib.request.urlopen(url).read().decode('ascii')
-        singleresult = FILESCANNER.scan_contents(os.path.basename(manifestname), data)
+        singleresult = FILESCANNER.scan_contents(os.path.basename(manifestname), data, registryurl=registryurl)
         write_output_file(resultsfile, singleresult)
     except Exception as e:
         print(f"Error: {e} in check_url")

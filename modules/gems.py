@@ -141,9 +141,13 @@ def get_gems_dependencies(filename, contents):
     return result
 
 #checks the gems public repo for a package
-def check_gems_public_repo(pkg):
+def check_gems_public_repo(pkg, registryurl=None):
     try:
-        with urllib.request.urlopen(f"https://rubygems.org/api/v1/gems/{pkg['name']}.json", timeout=10) as url:
+        base_url = 'https://rubygems.org/'
+        if registryurl:
+            base_url = registryurl
+
+        with urllib.request.urlopen(f"{base_url}api/v1/gems/{pkg['name']}.json", timeout=10) as url:
             data = json.loads(url.read().decode())
         return data['version']
     except Exception as e:

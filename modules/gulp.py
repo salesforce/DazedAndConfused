@@ -28,9 +28,13 @@ def get_gulp_dependencies(filename, contents):
     return results
 
 #checks the npm public repo for a package
-def check_gulp_public_repo(pkg):
+def check_gulp_public_repo(pkg, registryurl=None):
     try:
-        with urllib.request.urlopen(f"https://registry.npmjs.org/{pkg['name']}/", timeout=10) as url:
+        base_url = 'https://registry.npmjs.org/'
+        if registryurl:
+            base_url = registryurl
+
+        with urllib.request.urlopen(f"{base_url}{pkg['name']}/", timeout=10) as url:
             data = json.loads(url.read().decode())
         if "dist-tags" in data:
             return data['dist-tags']['latest']
